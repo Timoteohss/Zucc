@@ -11,7 +11,7 @@ amarelo='\e[1;33m'
 azul='\e[1;34m'
 
 #Variaveis
-versao='0.1'
+versao='0.11'
 codenome='zuccsip'
 
 trap ctrl_c INT
@@ -125,7 +125,7 @@ echo "  [0;34m▐▘▐[0m  [0;34m▌▗▘[0m [0;34m▘▗▘[0m [0;34m�
 echo " [0;34m▗▌[0m [0;34m▐[0m  [0;34m▌[0;37m▐[0m   [0;37m▐[0m       [0;37m▐[0m  [0;37m▌[0;1;30;90m▝▙▄[0m "
 echo " [0;37m▞[0m  [0;37m▐[0m  [0;37m▌▐[0m   [0;37m▐[0m       [0;1;30;90m▐[0m  [0;1;30;90m▌[0m  [0;1;30;90m▝▌[0m"
 echo "[0;37m▐▙▄▖▝▄▄▘[0m [0;1;30;90m▚▄▘[0m [0;1;30;90m▚▄▘[0m     [0;1;30;90m▙▟[0m [0;1;34;94m▝▄▟▘[0m"
-echo -e $branco"-----------------------------<>v$versao"
+echo -e $branco"----------------------------<>v$versao"
 echo -e " "
 echo -e $branco"[$verdeclaro"01"$branco]$verdeescuro	Lista computadores com SSH na rede	"
 echo -e $branco"[$verdeclaro"02"$branco]$verdeescuro	Listar computadores	"
@@ -141,8 +141,34 @@ if test $zucc == '1'
 	echo -e $vermelho"[*] Digite as faixas de ip :"
 	echo -n -e $vermelho'\033[4mUsuario@zuccos-v1:\033[0m '; tput sgr0 #insira sua escoha
 	read ip
-	nmap -p 22 --open -sV $ip | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" > output/ips
-	cat output/ips
+
+	echo -e $vermelho"[*] Digite o nome do arquivo a ser gerado :"
+	echo -n -e $vermelho'\033[4mUsuario@zuccos-v1:\033[0m '; tput sgr0 #insira sua escoha
+	read fname
+	ftemp=".$fname"
+
+	echo -e $vermelho"[*] Scaneando IPs..."
+	nmap -p 22 --open -sV $ip | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" > output/$ftemp
+	cat output/$ftemp
+
+	echo ""
+	echo -e $vermelho"[*] Qual o nome do Administrador das maquinas? "
+	echo -n -e $vermelho'\033[4mUsuario@zuccos-v1:\033[0m '; tput sgr0 #insira sua escoha
+	read super
+
+	mkdir -p ~/.ssh
+	while read line
+	do
+		ssh-keyscan $line >> ~/.ssh/known_hosts
+	done < output/$ftemp
+
+	while read line
+	do
+		echo "$super@$line" >> output/$fname
+	done < output/$ftemp
+
+	rm output/$ftemp
+
 	sleep 1
 	menuPrincipal
 elif test $zucc == '2'
