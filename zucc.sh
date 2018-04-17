@@ -167,6 +167,21 @@ if test $zucc == '1'
 		echo "$super@$line" >> output/$fname
 	done < output/$ftemp
 
+	echo ""
+	echo -e $vermelho"[*] Testando conexao com as maquinas..."
+	> output/$ftemp
+	pssh -h output/$fname -l root -A echo "ZuccTest" | grep -E "(\[[SUCESS]*\])" | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" >> output/$ftemp
+	maquinas=$(wc -l output/$ftemp)
+
+	echo -e $verde"[✔] Foram encontradas $maquinas onlines na rede."
+	> output/$fname
+
+	while read line
+	do
+		echo "$super@$line" >> output/$fname
+	done < output/$ftemp
+	
+
 	rm output/$ftemp
 
 	sleep 1
